@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+<link href="forms.css" rel="stylesheet" />
+    <title>Form</title>
+</head>
+<body>
+    <html>
+  <h1 id="title">Register your Events</h1>
+   <link rel="stylesheet" href="static/forms.css">
+  <p id="description">Tell us some things about your Event</p>
+  <form id="survey-form">
+    <fieldset>
+      <label for= "name" id="name" >Enter your event name: <input name="event_name" id="name" type="text" placeholder="Firstname Lastname" value="John Burrough" required ></label>
+      <label for= "date" id="event_starting_date" >Enter your event starting date: <input name="event_starting_date" id="date_start" type="date" placeholder="DD/MM/YYYY"
+        onfocus="(this.type='date')"
+        onblur="(this.type='text')" min="2018-01-01" max="2025-12-31" required ></label>
+      <label for= "date" id="event_starting_date" >Enter your event Ending date: <input name="event_ending_date" id="date_end" type="date" placeholder="DD/MM/YYYY"
+        onfocus="(this.type='date')"
+        onblur="(this.type='text')" min="2018-01-01" max="2025-12-31" required ></label>
+      
+      <label for= "name" id="name-label" >Enter your event type: <input name="event_type" id="name" type="text" value="Mood Indigo" required ></label>
+
+      <label id="number-label">What is your favorite number? <input id="number" pattern="[0-9]" min="0" max="9999" placeholder="Between 0 & 9999" value="42" type="number"></label>
+      </fieldset>
+      
+              <label for="wallet-key">Enter Details about the Event:<textarea name = "event_details" id="wallet-key" ></textarea>
+              </label>
+              </fieldset>
+            <input type="submit" id="submit">
+  </form>
+  </html>
+</body>
+</html>
