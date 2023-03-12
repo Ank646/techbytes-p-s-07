@@ -104,7 +104,7 @@ def signupcollege(request):
         firstname = request.POST["college"]
         email = request.POST["email"]
         password = request.POST["password"]
-        # address = request.POST["address"]
+        address = request.POST["address"]
         country = request.POST["country"]
         if User.objects.filter(email=email).exists():
             messages.info(request, 'Email already in use')
@@ -117,7 +117,7 @@ def signupcollege(request):
                 username=username, password=password, email=email, first_name=firstname)
             user.save()
             college = colleges.objects.create(
-                name=firstname, email=email, uniqid=username, password=password, country=country)
+                name=firstname, email=email, address=address, uniqid=username, password=password, country=country)
             college.save()
             messages.info(
                 request, 'Successfully Registered. You can now login to your account.')
@@ -142,10 +142,10 @@ def signup(request):
 
         if User.objects.filter(email=email).exists():
             messages.info(request, 'Email already in use')
-            return redirect('home')
+            return redirect('signup')
         elif User.objects.filter(username=username).exists():
             messages.info(request, 'Username already in use')
-            return redirect('home')
+            return redirect('signup')
         else:
             user = User.objects.create_user(
                 username=username, password=password, email=email, first_name=firstname)
@@ -155,10 +155,18 @@ def signup(request):
             ussr.save()
             messages.info(
                 request, 'Successfully Registered. You can now login to your account.')
-            return redirect('home')
+            return redirect('signup')
 
     else:
         return render(request, "login.html")
+
+
+@login_required(login_url="login")
+def myregev(request):
+    name = request.user.username
+    eventparticipate = Contact.objects.filter(name=name)
+    hj = len(eventparticipate)
+    return render(request, "myeventparticipate.html", {'part': eventparticipate, 'no': hj})
 
 
 @login_required(login_url="login")
@@ -255,9 +263,91 @@ def participants(request, evuu):
     return render(request, 'eventpart.html', {'eventparticipants': eve, 'eventname': eventname, 'noofparticipants': length})
 
 
+@login_required(login_url="login")
 def eventpage(request, id):
     events = EventPage.objects.get(id=id)
-    return render(request, 'eventpage.html', {'events': events})
+    registered = 0
+    reg = Contact.objects.filter(desc=id, name=request.user.username)
+    gh = len(reg)
+    if gh != 0:
+        registered = 1
+
+    return render(request, 'eventpage.html', {'event': events, 'registered': registered})
+
+
+@login_required(login_url="login")
+def partevent(request, id):
+    student = request.user.username
+    studentemail = request.user.email
+    if Contact.objects.filter(desc=id, name=student).exists():
+        messages.info(request, "You have already registered for the event.")
+        return redirect("/eventpage/"+id)
+    else:
+        contact = Contact(
+            name=student, email=studentemail, desc=id)
+
+        contact.save()
+        messages.success(
+            request, 'You are successfully registered for the events')
+        event = EventPage.objects.get(id=id)
+        event.participants = int(event.participants)+1
+        event.save()
+
+        context = {
+            "name": student,
+
+            "event": event.title,
+            "location": event.location,
+            "desc": event.desc,
+            "organizer": event.organizer
+        }
+        buf = io.BytesIO()
+        c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+        textob = c.beginText()
+        textob.setTextOrigin(inch, inch)
+        textob.setFont("Helvetica", 14)
+
+        # filter it among ngo
+        use = EventPage.objects.get(id=id)
+
+        lines = []
+        lines.append("Your name:    "+student)
+        lines.append("Your email:    "+request.user.email)
+        lines.append("=============================")
+        lines.append("=============================")
+        lines.append("You registered for :")
+
+        lines.append("TYPE:    "+use.tag)
+        lines.append("=============================")
+        lines.append("=============================")
+        lines.append("Organiser:   "+use.organizer)
+        lines.append("Title:   "+use.title)
+        lines.append("CITY:   "+use.location)
+        lines.append("DATE:    "+str(use.eventday)+"/" +
+                     str(use.eventmonth)+"/"+str(use.eventyear))
+        lines.append("=============================")
+        lines.append("=============================")
+        lines.append("Description:     "+use.desc)
+
+        lines.append("=============================")
+        lines.append("=============================")
+
+        for line in lines:
+            textob.textLine(line)
+
+        c.drawText(textob)
+        c.showPage()
+        c.save()
+        buf.seek(0)
+
+        return FileResponse(buf, as_attachment=True, filename="events"+student+id+".pdf")
+
+    # message = render_to_string(
+    #     'email/registration_complete_email.html', context)
+    # send_mail('Registration Completed ',  strip_tags(
+    #     message), 'ak21eeb0b08@student.nitw.ac.in', [email], fail_silently=False, html_message=message)
+
+    return render(request, "eventpage.html")
 
 
 def logout(request):

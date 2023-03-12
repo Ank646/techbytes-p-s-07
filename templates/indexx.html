@@ -64,8 +64,12 @@
   
   <li><a href="login">StudentLogin</a></li>
   {%endif%}
-        <li><a href="#schedule">Popular Events</a></li>
-         
+            {% if user.is_authenticated %}
+            <li><a href="/myregev">Your registered events</a></li>
+     
+        {% else %} 
+                 
+        {%endif%}
          
         </ul>
       </nav><!-- #nav-menu-container -->
@@ -82,9 +86,8 @@
     {% else %}
     <h1 class="mb-4 pb-0">Events<br><span>Going </span> on</h1>
     {% endif %}
-         <a href="https://www.youtube.com/watch?v=jDDaplaOz7Q" class="venobox play-btn mb-4" data-vbtype="video"
-        data-autoplay="true"></a>
-      <a href="#about" class="about-btn scrollto">About The Event</a>
+        
+      <a href="#about" class="about-btn scrollto">About The Patform</a>
     </div>
   </section>
 
@@ -97,7 +100,7 @@
       <div class="container">
         <div class="row">
           <div class="col-lg-6">
-            <h2>About The Event</h2>
+            <h2>About The Platform</h2>
             <p>List of all the activities conducted by college and other educational institutions</p>
           </div>
           <div class="col-lg-3">
@@ -149,16 +152,16 @@
             <div class="row schedule-item">
               <h3 class="card-text" id="eventtag" style="text-align:center;margin: color:orange;font-family: algerian;"><button class="btn btn-danger" style="height: 50px;border-radius:32px;width:120px;align-items:center;" type="submit">{{eve.tag}}</button></h3>
    
-              <div class="col-md-2"><time>{{eve.eventdate}}</time></div>
-              <div class="col-md-2"><time>{{eve.eventmonth}}</time></div>
-            <div class="col-md-2"><time>{{eve.eventday}}</time></div>
-            <div class="col-md-2"><time>{{eve.eventyear}}</time></div>
+              <div class="col-md-2"><time>{{eve.eventdate}}/{{eve.eventmonth}}/{{eve.eventyear}} </time></div>
+              <div class="col-md-2"><time>{{eve.eventday}}</time></div>
+            <div class="col-md-2">{{eve.header}}</div>
+            <div class="col-md-2">{{eve.organizer}}</div>
          
               <div class="col-md-10">
                 <div class="speaker">
                   <img src="https://source.unsplash.com/1600x900/?{{eve.title}},{{eve.tag}}" alt="">
                 </div>
-                <h4>{{eve.header}} <span></span></h4>
+                <h4>{{eve.title}} <span></span></h4>
                 <p>{{eve.desc}}</p>
                 <h3 class="card-text" id="eventinfo" style="text-align:right; color:orange;font-family: sans seriff;padding-top:20px;padding-bottom:5px;"><a href="eventpage/{{eve.id}}"><button class="btn btn-dark" style="height: 50px;width:120px;align-items:center;" type="submit">More Info</button></a></h3>
  
@@ -171,22 +174,22 @@
 
           <!-- Schdule Day 2 -->
           <div role="tabpanel" class="col-lg-9  tab-pane fade" id="day-2">
-            {%for evn in events2023%}
+            {%for eve in events2023%}
             <div class="row schedule-item">
-              <h3 class="card-text" id="eventtag" style="text-align:center; color:orange;font-family: algerian;"><button class="btn btn-danger" style="height: 50px;border-radius:32px;width:120px;align-items:center;" type="submit">{{evn.tag}}</button></h3>
+              <h3 class="card-text" id="eventtag" style="text-align:center; color:orange;font-family: algerian;"><button class="btn btn-danger" style="height: 50px;border-radius:32px;width:120px;align-items:center;" type="submit">{{eve.tag}}</button></h3>
    
-              <div class="col-md-2"><time>{{evn.eventdate}}</time></div>
-              <div class="col-md-2"><time>{{evn.eventmonth}}</time></div>
-            <div class="col-md-2"><time>{{evn.eventday}}</time></div>
-            <div class="col-md-2"><time>{{evn.eventyear}}</time></div>
+              <div class="col-md-2"><time>{{eve.eventdate}}/{{eve.eventmonth}}/{{eve.eventyear}} </time></div>
+              <div class="col-md-2"><time>{{eve.eventday}}</time></div>
+            <div class="col-md-2">{{eve.header}}</div>
+            <div class="col-md-2">{{eve.organizer}}</div>
          
               <div class="col-md-10">
                 <div class="speaker">
-                  <img src="https://source.unsplash.com/1600x900/?{{evn.title}},{{evn.tag}}" alt="">
+                  <img src="https://source.unsplash.com/1600x900/?{{eve.title}},{{eve.tag}}" alt="">
                 </div>
-                <h4>{{evn.header}} <span></span></h4>
-                <p>{{evn.desc}}</p>
-                <h3 class="card-text" id="eventinfo" style="text-align:right; color:orange;font-family: sans seriff;padding-top:20px;padding-bottom:5px;"><a href="eventpage/{{evn.id}}"><button class="btn btn-dark" style="height: 50px;width:120px;align-items:center;" type="submit">More Info</button></a></h3>
+                <h4>{{eve.title}} <span></span></h4>
+                <p>{{eve.desc}}</p>
+                 <h3 class="card-text" id="eventinfo" style="text-align:right; color:orange;font-family: sans seriff;padding-top:20px;padding-bottom:5px;"><a href="eventpage/{{eve.id}}"><button class="btn btn-dark" style="height: 50px;width:120px;align-items:center;" type="submit">More Info</button></a></h3>
  
               </div>
             </div>
@@ -197,22 +200,22 @@
 
           <!-- Schdule Day 3 -->
           <div role="tabpanel" class="col-lg-9  tab-pane fade" id="day-3">
-            {%for evr in events2021%}
+            {%for eve in events2021%}
             <div class="row schedule-item">
-              <h3 class="card-text" id="eventtag" style="text-align:center; color:orange;font-family: algerian;"><button class="btn btn-danger" style="height: 50px;border-radius:32px;width:120px;align-items:center;" type="submit">{{evr.tag}}</button></h3>
+              <h3 class="card-text" id="eventtag" style="text-align:center; color:orange;font-family: algerian;"><button class="btn btn-danger" style="height: 50px;border-radius:32px;width:120px;align-items:center;" type="submit">{{eve.tag}}</button></h3>
    
-              <div class="col-md-2"><time>{{evr.eventdate}}</time></div>
-              <div class="col-md-2"><time>{{evr.eventmonth}}</time></div>
-            <div class="col-md-2"><time>{{evr.eventday}}</time></div>
-            <div class="col-md-2"><time>{{evr.eventyear}}</time></div>
+              <div class="col-md-2"><time>{{eve.eventdate}}/{{eve.eventmonth}}/{{eve.eventyear}} </time></div>
+              <div class="col-md-2"><time>{{eve.eventday}}</time></div>
+            <div class="col-md-2">{{eve.header}}</div>
+            <div class="col-md-2">{{eve.organizer}}</div>
          
               <div class="col-md-10">
                 <div class="speaker">
-                  <img src="https://source.unsplash.com/1600x900/?{{evr.title}},{{evr.tag}}" alt="">
+                  <img src="https://source.unsplash.com/1600x900/?{{eve.title}},{{eve.tag}}" alt="">
                 </div>
-                <h4>{{evr.header}}<span></span></h4>
-                <p>{{evr.desc}}</p>
-                <h3 class="card-text" id="eventinfo" style="text-align:right; color:orange;font-family: sans seriff;padding-top:20px;padding-bottom:5px;"><a href="eventpage/{{evr.id}}"><button class="btn btn-dark" style="height: 50px;width:120px;align-items:center;" type="submit">More Info</button></a></h3>
+                <h4>{{eve.title}} <span></span></h4>
+                <p>{{eve.desc}}</p>
+               <h3 class="card-text" id="eventinfo" style="text-align:right; color:orange;font-family: sans seriff;padding-top:20px;padding-bottom:5px;"><a href="eventpage/{{eve.id}}"><button class="btn btn-dark" style="height: 50px;width:120px;align-items:center;" type="submit">More Info</button></a></h3>
  
               </div>
             </div>
@@ -347,7 +350,7 @@
          <a href="collegeevent/{{college.uniqid}}"> <div class="animals col-lg-4 col-md-6">
             <div class="hotel">
               <div class="hotel-img">
-                <img src="static/imgg/hotels/1.jpg" alt="Hotel 1" class="img-fluid">
+                <img src="https://source.unsplash.com/1600x900/?college" alt="Hotel 1" class="img-fluid">
               </div>
               <h3><a href="#">{{college.name}}</a></h3>
               <div class="stars">
