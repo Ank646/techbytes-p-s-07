@@ -7,13 +7,13 @@
 
 body{
   width: 100%;
-  height: 100vh;
+  /* height: 100vh; */
   display: flex;
   justify-content: center;
   align-items: center;
   background: -webkit-linear-gradient(left, #7579ff, #b224ef);
   font-family: 'Nunito', sans-serif;
-  background-image: url('../img/loginbg.jpg') !important;
+  /* background: linear-gradient(pink,purple); */
   background-size: cover;
 }
 
@@ -27,7 +27,7 @@ input, button{
   overflow: hidden;
   position: relative;
   width: 660px;
-  height: 550px;
+  height: 700px;
   background: #fff;
   box-shadow: 0 19px 38px rgba(0, 0, 0, 0.30), 0 15px 12px rgba(0, 0, 0, 0.22);
 }
@@ -35,8 +35,8 @@ input, button{
 .form{
   position: relative;
   width: 400px;
-  height: 700px;
-  padding: 50px 30px;
+  height: 1000px;
+  padding: 10px 10px;
   background: transparent !important;
   -webkit-transition:-webkit-transform 1.2s ease-in-out;
   transition: -webkit-transform 1.2s ease-in-out;
@@ -59,8 +59,8 @@ label{
 
 label span{
   font-size: 14px;
-  font-weight: 600;
-  color: #505f75;
+  font-weight: 400;
+  color: #8c9197;
   text-transform: uppercase;
 }
 
@@ -68,7 +68,7 @@ input{
   display: block;
   width: 100%;
   margin-top: 5px;
-  font-size: 16px;
+  font-size: 10px;
   padding-bottom: 5px;
   border-bottom: 1px solid rgba(109, 93, 93, 0.4);
   text-align: center;

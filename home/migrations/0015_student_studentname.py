@@ -5,6 +5,7 @@ from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
 from django.utils.timezone import utc
+import uuid
 
 
 class Migration(migrations.Migration):
@@ -18,7 +19,8 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='student',
             name='studentname',
-            field=models.ForeignKey(default=datetime.datetime(2023, 3, 11, 9, 23, 46, 781079, tzinfo=utc), on_delete=django.db.models.deletion.CASCADE, to='auth.user'),
+            field=models.ForeignKey(
+                default=uuid.uuid4, on_delete=django.db.models.deletion.CASCADE, to='auth.user'),
             preserve_default=False,
         ),
     ]

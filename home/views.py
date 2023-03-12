@@ -1,3 +1,8 @@
+import io
+from reportlab.pdfgen import canvas
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
+from django.http import FileResponse
 from django.contrib.auth.decorators import login_required
 from home.models import colleges
 from django.shortcuts import render, redirect
@@ -19,16 +24,6 @@ from_email = settings.EMAIL_HOST_USER
 
 
 def index(request):
-    event = EventPage.objects.all()
-
-    events2021 = EventPage.objects.filter(eventyear=2021)
-    events2023 = EventPage.objects.filter(eventyear=2023)
-    college = colleges.objects.all()
-
-    return render(request, 'index.html', {'event': event, 'events2021': events2021, 'events2023': events2023, 'colleges': college})
-
-
-def gh(request):
     events2022 = EventPage.objects.filter(eventyear=2022)
     print(events2022)
     events2021 = EventPage.objects.filter(eventyear=2021)
@@ -36,6 +31,16 @@ def gh(request):
     college = colleges.objects.all()
 
     return render(request, 'indexx.html', {'events2022': events2022, 'events2021': events2021, 'events2023': events2023, 'colleges': college})
+
+
+# def gh(request):
+#     events2022 = EventPage.objects.filter(eventyear=2022)
+#     print(events2022)
+#     events2021 = EventPage.objects.filter(eventyear=2021)
+#     events2023 = EventPage.objects.filter(eventyear=2023)
+#     college = colleges.objects.all()
+
+#     return render(request, 'indexx.html', {'events2022': events2022, 'events2021': events2021, 'events2023': events2023, 'colleges': college})
 
 
 def logincollege(request):
@@ -156,12 +161,11 @@ def signup(request):
         return render(request, "login.html")
 
 
+@login_required(login_url="login")
 def contact(request):
     if request.method == "POST":
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        phone = request.POST.get('phone')
-        desc = request.POST.get('textbox')
+        id = request.POST.get('textbox')
+        name = request.user.username
         recaptcha_response = request.POST.get('g-recaptcha-response')
         data = {
             'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
@@ -172,24 +176,69 @@ def contact(request):
         result = r.json()
 
         if result['success']:
-            contact = Contact(name=name, email=email, phone=phone, desc=desc)
+            contact = Contact(
+                name=name, email=request.user.email, desc=id)
             contact.save()
             messages.success(
-                request, 'Your response has been sent! You will soon be recieving an email containing all the details. If you cannot find the email in your inbox, check the bulk or the junk folders.')
-            event = EventPage.objects.get(id=desc)
+                request, 'You are successfully registered for the events')
+            event = EventPage.objects.get(id=id)
+            event.participants = int(event.participants)+1
+            event.save()
+
             context = {
                 "name": name,
-                "phone": phone,
+
                 "event": event.title,
                 "location": event.location,
                 "desc": event.desc,
                 "organizer": event.organizer
             }
-            message = render_to_string(
-                'email/registration_complete_email.html', context)
-            send_mail('Registration Completed | EventsForU',  strip_tags(
-                message), 'ak21eeb0b08@student.nitw.ac.in', [email], fail_silently=False, html_message=message)
-            return redirect('home')
+            buf = io.BytesIO()
+            c = canvas.Canvas(buf, pagesize=letter, bottomup=0)
+            textob = c.beginText()
+            textob.setTextOrigin(inch, inch)
+            textob.setFont("Helvetica", 14)
+
+            # filter it among ngo
+            use = EventPage.objects.get(id=id)
+
+            lines = []
+            # Will Add All Progress Accordingly
+            lines.append("Your name:    "+name)
+            lines.append("Your email:    "+request.user.email)
+            lines.append("=============================")
+            lines.append("=============================")
+            lines.append("You registered for :")
+
+            lines.append("TYPE:    "+use.tag)
+            lines.append("=============================")
+            lines.append("=============================")
+            lines.append("Organiser:   "+use.organizer)
+            lines.append("Title:   "+use.title)
+            lines.append("CITY:   "+use.location)
+            lines.append("DATE:    "+str(use.eventday)+"/"+str(use.eventyear))
+            lines.append("=============================")
+            lines.append("=============================")
+            lines.append("Description:     "+use.desc)
+
+            lines.append("=============================")
+            lines.append("=============================")
+
+            for line in lines:
+                textob.textLine(line)
+
+            c.drawText(textob)
+            c.showPage()
+            c.save()
+            buf.seek(0)
+
+            return FileResponse(buf, as_attachment=True, filename="events"+id+".pdf")
+
+            # message = render_to_string(
+            #     'email/registration_complete_email.html', context)
+            # send_mail('Registration Completed ',  strip_tags(
+            #     message), 'ak21eeb0b08@student.nitw.ac.in', [email], fail_silently=False, html_message=message)
+            return redirect('/')
         else:
             messages.error(request, 'Invalid reCAPTCHA. Please try again.')
             return redirect('contact')
@@ -197,8 +246,17 @@ def contact(request):
         return render(request, "contact.html")
 
 
+@login_required(login_url="logincollege")
+def participants(request, evuu):
+    eve = Contact.objects.filter(desc=evuu)
+    eventt = EventPage.objects.get(id=evuu)
+    length = len(eve)
+    eventname = eventt.title
+    return render(request, 'eventpart.html', {'eventparticipants': eve, 'eventname': eventname, 'noofparticipants': length})
+
+
 def eventpage(request, id):
-    events = EventPage.objects.filter(id=id).first()
+    events = EventPage.objects.get(id=id)
     return render(request, 'eventpage.html', {'events': events})
 
 
@@ -209,25 +267,37 @@ def logout(request):
 
 def logoutcollege(request):
     auth.logout(request)
-    return redirect('/gh')
+    return redirect('/')
+
+
+@login_required(login_url="login")
+def collegeevent(request, colleve):
+    col = EventPage.objects.filter(college=colleve)
+    institute = colleges.objects.get(uniqid=colleve)
+    return render(request, "collegeevent.html", {"collegeevents": col, "institutename": institute.name})
 
 
 @login_required(login_url="logincollege")
-def formevent(request):
-    coll = colleges.objects.get(uniqid=request.user.username)
+def registerevent(request):
+    if request.method == "POST":
+        coll = colleges.objects.get(uniqid=request.user.username)
 
-    eventdate = request.POST.get('name')
-    eventday = request.POST.get('email')
-    desc = request.POST.get('desc')
-    title = request.POST.get('title')
-    month = request.POST.get('month')
-    year = request.POST.get('year')
-    organizer = coll.name
-    id = request.POST.get('id')
-    createdat = request.POST.get('createdat')
-    location = request.POST.get('locationr')
-    tag = request.POST.get('tag')
-    heading = request.POST.get('head')
-    event = EventPage.objects.create(id=id, title=title.upper(), college=coll.uniqid, created_at=createdat, eventyear=year, eventmonth=month,
-                                     organizer=coll.name, desc=desc, eventday=eventday, eventdate=eventdate, location=location, tag=tag, header=heading)
-    event.save()
+        eventdate = request.POST.get('date')
+        eventday = request.POST.get('day')
+        desc = request.POST.get('desc')
+        title = request.POST.get('title')
+        month = request.POST.get('month')
+        year = request.POST.get('year')
+        organizer = coll.name
+
+        location = request.POST.get('location')
+        tag = request.POST.get('tag')
+        heading = request.POST.get('head')
+        event = EventPage.objects.create(title=title.upper(), college=coll.uniqid,  eventyear=year, eventmonth=month,
+                                         organizer=coll.name, desc=desc, eventday=eventday, eventdate=eventdate, location=location, tag=tag, header=heading)
+        event.save()
+        messages.success(request, "Event registered .....")
+
+        return redirect("/registerevent")
+    else:
+        return render(request, "registerevent.html")

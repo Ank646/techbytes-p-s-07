@@ -11,24 +11,42 @@
 <body>
     <html>
   <h1 id="title">Register your Events</h1>
+  {%for messages in message%}
+  {{messages}}
+  {%endfor%}
    <link rel="stylesheet" href="static/forms.css">
   <p id="description">Tell us some things about your Event</p>
-  <form id="survey-form">
+  <form id="survey-form" action="/registerevent" method="post">
+    {% csrf_token %}
     <fieldset>
-      <label for= "name" id="name" >Enter your event name: <input name="event_name" id="name" type="text" placeholder="Firstname Lastname" value="John Burrough" required ></label>
-      <label for= "date" id="event_starting_date" >Enter your event starting date: <input name="event_starting_date" id="date_start" type="date" placeholder="DD/MM/YYYY"
-        onfocus="(this.type='date')"
-        onblur="(this.type='text')" min="2018-01-01" max="2025-12-31" required ></label>
-      <label for= "date" id="event_starting_date" >Enter your event Ending date: <input name="event_ending_date" id="date_end" type="date" placeholder="DD/MM/YYYY"
-        onfocus="(this.type='date')"
-        onblur="(this.type='text')" min="2018-01-01" max="2025-12-31" required ></label>
+      <label for= "name" id="name" >Enter your event name: <input name="title" id="name" type="text" placeholder="Title"  required ></label>
+      <label for= "date" id="event_starting_date" >Enter your event starting date: <input name="date" min=1 max=31 id="date_start" type="number" placeholder="DD(e.g. -12)"
+       
+        onblur="(this.type='text')" required ></label>
+        <label for= "day" id="event_starting_date" >Enter your event starting day: <input name="day"  id="date_start" type="text" placeholder="day(e.g. - sunday)"
+       
+          onblur="(this.type='text')" required ></label>
+          <label for= "month" id="event_starting_date" >Enter your event starting month: <input name="month"  id="date_start" min=1 max=12 type="text" placeholder="day(e.g. - March)"
+       
+            onblur="(this.type='text')" required ></label>
+    
+  
+          <label for= "year" id="event_starting_date" >Enter your event starting year: <input name="year" min=2022 max=2025 id="date_start" type="number" placeholder="YYYY(e.g. - 2022)"
+       
+            onblur="(this.type='text')" required ></label>
       
-      <label for= "name" id="name-label" >Enter your event type: <input name="event_type" id="name" type="text" value="Mood Indigo" required ></label>
-
-      <label id="number-label">What is your favorite number? <input id="number" pattern="[0-9]" min="0" max="9999" placeholder="Between 0 & 9999" value="42" type="number"></label>
+      <!-- <label for= "date" id="event_starting_date" >Enter your event Ending date: <input name="endingdate" id="date_end" type="date" placeholder="DD/MM/YYYY"
+        onfocus="(this.type='date')"
+        onblur="(this.type='text')" min="2018-01-01" max="2025-12-31" required ></label> -->
+        <label for= "location" id="name" >Enter your event location: <input name="location" id="name" type="text" placeholder="Location"  required ></label>
+     
+      <label for= "name" id="name-label" >Enter your event type: <input name="tag" id="name" type="text" placeholder="Hackathons" required ></label>
+      <label for= "name" id="name" >Enter a short bio: <input name="head" id="name" type="text" placeholder="heading"  required ></label>
+     
+      <!-- <label id="number-label">Enter a short bio <input id="number" pattern="[0-9]" min="0" max="9999" placeholder="Between 0 & 9999" value="42" type="number"></label> -->
       </fieldset>
       
-              <label for="wallet-key">Enter Details about the Event:<textarea name = "event_details" id="wallet-key" ></textarea>
+              <label for="wallet-key">Enter Details about the Event:<textarea name = "desc" id="wallet-key" ></textarea>
               </label>
               </fieldset>
             <input type="submit" id="submit">

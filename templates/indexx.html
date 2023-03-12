@@ -51,11 +51,20 @@
 
       <nav id="nav-menu-container">
         <ul class="nav-menu">
-          <li class="menu-active"><a href="#intro">Home</a></li>
+          <li class="menu-active"><a href="#">Home</a></li>
           <li><a href="#about">About</a></li>
-          <li><a href="#speakers">CollegeLogin</a></li>
-          <li><a href="#schedule">StudentLogin</a></li>
-          <li><a href="#venue">Popular Events</a></li>
+            {% if user.is_authenticated %}
+  {% else %} 
+  <li><a href="/logincollege">CollegeLogin</a></li>
+        
+  {%endif%}
+          {% if user.is_authenticated %}
+          <li><a href="/logout">Logout</a></li>
+  {% else %} 
+  
+  <li><a href="login">StudentLogin</a></li>
+  {%endif%}
+        <li><a href="#schedule">Popular Events</a></li>
          
          
         </ul>
@@ -67,9 +76,13 @@
     Intro Section
   ============================-->
   <section id="intro">
-    <div class="intro-container wow fadeIn">
-      <h1 class="mb-4 pb-0">Events<br><span>Going </span> on</h1>
-        <a href="https://www.youtube.com/watch?v=jDDaplaOz7Q" class="venobox play-btn mb-4" data-vbtype="video"
+    <div class="intro-container wow fadeIn"> {% if user.is_authenticated %}
+        <h1 class="mb-4 pb-0">Hello, {{user.first_name}} Events<br><span>Going </span> on</h1>
+   
+    {% else %}
+    <h1 class="mb-4 pb-0">Events<br><span>Going </span> on</h1>
+    {% endif %}
+         <a href="https://www.youtube.com/watch?v=jDDaplaOz7Q" class="venobox play-btn mb-4" data-vbtype="video"
         data-autoplay="true"></a>
       <a href="#about" class="about-btn scrollto">About The Event</a>
     </div>
@@ -131,10 +144,10 @@
         <div class="tab-content row justify-content-center">
 
           <!-- Schdule Day 1 -->
-          <div role="tabpanel" class="col-lg-9  tab-pane fade" id="day-1">
+          <div role="tabpanel" class="col-lg-9  tab-pane fade active" id="day-1">
             {%for eve in events2022%}
             <div class="row schedule-item">
-              <h3 class="card-text" id="eventtag" style="text-align:center; color:orange;font-family: algerian;"><button class="btn btn-danger" style="height: 50px;border-radius:32px;width:120px;align-items:center;" type="submit">{{eve.tag}}</button></h3>
+              <h3 class="card-text" id="eventtag" style="text-align:center;margin: color:orange;font-family: algerian;"><button class="btn btn-danger" style="height: 50px;border-radius:32px;width:120px;align-items:center;" type="submit">{{eve.tag}}</button></h3>
    
               <div class="col-md-2"><time>{{eve.eventdate}}</time></div>
               <div class="col-md-2"><time>{{eve.eventmonth}}</time></div>
@@ -217,11 +230,11 @@
     <section id="hotels" class="section-with-bg wow fadeInUp">
       <form method="POST" action="search">
       {%csrf_token%}
-      <center>  <input class="form-control mr-sm-2" style="height: 50px; color: red;width: 500px;border-radius:32px;" type="search" name="eventname" placeholder="Search by name of event" aria-label="Search">
-        <button class="btn btn-warning my-2 my-sm-0" style="height: 50px;border-radius:32px;width:100px;" type="submit">Search</button></center></form>
+      <center>  <input class="form-control mr-sm-2" style="height: 50px; margin:15px;color: red;width: 500px;border-radius:32px;" type="search" name="eventname" placeholder="Search by name of event" aria-label="Search">
+        <button class="btn btn-warning my-2 my-sm-0" style="height: 50px;margin:15px;border-radius:32px;width:100px;" type="submit">Search</button></center></form>
         {%for eve in eventss%}
         <div class="row schedule-item">
-          <h3 class="card-text" id="eventtag" style="text-align:center; color:orange;font-family: algerian;"><button class="btn btn-danger" style="height: 50px;border-radius:32px;width:120px;align-items:center;" type="submit">{{eve.tag}}</button></h3>
+          <h3 class="card-text" id="eventtag" style="text-align:center; color:orange;font-family: algerian;"><button class="btn btn-danger" style="height: 50px;margin:15px;border-radius:32px;width:120px;align-items:center;" type="submit">{{eve.tag}}</button></h3>
 
           <div class="col-md-2"><time>{{eve.eventdate}}</time></div>
           <div class="col-md-2"><time>{{eve.eventmonth}}</time></div>
@@ -295,18 +308,43 @@
       Hotels Section
     ============================-->
     <section id="hotels" class="section-with-bg wow fadeInUp">
-    <center>  <input class="form-control mr-sm-2" style="height: 50px; color: red;width: 500px;border-radius:32px;" type="search" placeholder="Search by name of institutions" aria-label="Search">
-      <button class="btn btn-warning my-2 my-sm-0" style="height: 50px;border-radius:32px;width:100px;" type="submit">Search</button></center>
+    <center>  <input class="form-control mr-sm-2" id="jkk" style="height: 50px; color: red;width: 500px;border-radius:32px;margin:15px;" type="text" placeholder="Search by name of institutions" aria-label="Search">
+      <input type="button"  value="Search" class="btn btn-warning my-2 my-sm-0" style="height: 50px;border-radius:32px;width:100px;margin:15px;" onclick="seach()"></center>
 
       <div class="container">
         <div class="section-header">
           <h2>Institutions</h2>
           <p>Here are some institutions</p>
         </div>
-
+<script>
+   function seach() {
+                        let input = document.getElementById('jkk').value
+                        input=input.toLowerCase();
+                        let x = document.getElementsByClassName('animals');
+                      k=x.length
+                    
+                       c=0
+                      
+                          console.log(x.innerHTML)
+                        for (i = 0; i < x.length; i++) { 
+                            if (!x[i].innerHTML.toLowerCase().includes(input)) {
+                                c++;
+                                x[i].style.display="none";
+                            }
+                            else {
+                                x[i].style.display="BLOCK";                 
+                            }
+                            if(c==k)
+                            {jo.style.display="block"
+                               
+                            }
+                          }
+                        }
+</script>
+</script>
         <div class="row">
 {% for college in colleges %}
-          <div class="col-lg-4 col-md-6">
+         <a href="collegeevent/{{college.uniqid}}"> <div class="animals col-lg-4 col-md-6">
             <div class="hotel">
               <div class="hotel-img">
                 <img src="static/imgg/hotels/1.jpg" alt="Hotel 1" class="img-fluid">
@@ -322,7 +360,7 @@
               <p>{{college.address}}</p>
              
             </div>
-          </div>
+          </div></a>
           {%endfor%}
 
         
