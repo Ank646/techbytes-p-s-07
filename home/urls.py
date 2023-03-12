@@ -20,6 +20,8 @@ urlpatterns = [
     path("registerevent", views.registerevent, name="registerevent"),
     path("eventpage/<str:id>", views.eventpage, name="eventpage"),
     path("partevent/<str:id>", views.partevent, name="partevent"),
+    path("cancelregistration/<str:id>",
+         views.cancelregistration, name="cancelregistration"),
 
     path("participants/<str:evuu>", views.participants, name="participants"),
 

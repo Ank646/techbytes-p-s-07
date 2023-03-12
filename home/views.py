@@ -355,6 +355,20 @@ def logout(request):
     return redirect('/')
 
 
+@login_required(login_url="login")
+def cancelregistration(request, id):
+    name = request.user.username
+    email = request.user.email
+    even = Contact.objects.get(name=name, desc=id, email=email)
+    even.delete()
+    event = EventPage.objects.get(id=id)
+
+    event.participants = int(event.participants)-1
+    event.save()
+    messages.info(request, "Successfully unregistered for the event ")
+    return redirect('/eventpage/'+id)
+
+
 def logoutcollege(request):
     auth.logout(request)
     return redirect('/')
